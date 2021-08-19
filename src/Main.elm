@@ -5,6 +5,7 @@ import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Url
+import Url.Parser exposing ((</>), (<?>), int)
 import Colour exposing (Colour(..))
 import Html.Events exposing (onInput)
 
@@ -32,13 +33,30 @@ type alias Model =
   , background: Maybe String
   }
 
+type Route
+  = HslRoute Int Int Int
+
+routeParser : Url.Parser.Parser (Route -> a) a
+routeParser =
+  Url.Parser.oneOf
+    [ Url.Parser.map HslRoute (Url.Parser.s "hsl" </> int </> int </> int)
+    ]
+
 init : () -> Url.Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url key =
-  ((Model key url 60 90 70 (Just "#FFF")) |> setBackgroundColour, Cmd.none)
+  case Url.Parser.parse routeParser url of
+    (Just (HslRoute h s l)) ->
+      ((Model key url (toFloat h) (toFloat s) (toFloat l) (Just "#FFF")) |> setBackgroundColour, Cmd.none)
+    _ ->
+      ((Model key url 0 0 100 (Just "#FFF")) |> setBackgroundColour, Cmd.none)
 
 setBackgroundColour : Model -> Model
 setBackgroundColour model =
   { model | background = Colour.toString(Just (Hsl { h = model.hue, s = model.saturation, l = model.lightness })) }
+
+formatCurrentRoute : Model -> String
+formatCurrentRoute model =
+  "/hsl/" ++ String.fromFloat model.hue ++ "/" ++ String.fromFloat model.saturation ++ "/" ++ String.fromFloat model.lightness
 
 -- UPDATE
 
@@ -48,6 +66,10 @@ type Msg
   | HueChanged String
   | SaturationChanged String
   | LightnessChanged String
+
+replaceUrl : Model -> Cmd msg
+replaceUrl model =
+  Nav.replaceUrl model.key (formatCurrentRoute model)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -63,13 +85,22 @@ update msg model =
           (model, Nav.load url)
 
     HueChanged hue ->
-      ({ model | hue = Maybe.withDefault 0 (String.toFloat hue) } |> setBackgroundColour, Cmd.none)
+      let
+        next = setBackgroundColour { model | hue = Maybe.withDefault 0 (String.toFloat hue) }
+      in
+        (next, replaceUrl next)
 
     SaturationChanged saturation ->
-      ({ model | saturation = Maybe.withDefault 0 (String.toFloat saturation) } |> setBackgroundColour, Cmd.none)
+      let
+        next = setBackgroundColour { model | saturation = Maybe.withDefault 0 (String.toFloat saturation) }
+      in
+        (next, replaceUrl next)
 
     LightnessChanged lightness ->
-      ({ model | lightness = Maybe.withDefault 0 (String.toFloat lightness) } |> setBackgroundColour, Cmd.none)
+      let
+        next = setBackgroundColour { model | lightness = Maybe.withDefault 0 (String.toFloat lightness) }
+      in
+        (next, replaceUrl next)
 
 -- SUBSCRIPTIONS
 
