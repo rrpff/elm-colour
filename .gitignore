@@ -1,6 +1,7 @@
 elm-stuff
 repl-temp-*
 public/index.js
+index.html
 
 .vercel
 node_modules
