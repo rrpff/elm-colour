@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "elm-live",
+    "dev": "elm-live src/Main.elm",
     "build": "elm make src/Main.elm --output public/index.js --optimize"
   },
   "devDependencies": {
