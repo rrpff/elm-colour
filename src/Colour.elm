@@ -3,7 +3,6 @@ import Regex
 import ParseInt
 import Dict exposing (remove)
 
--- TODO: idiomatic way to rename?
 type Colour
   = Hex String
   | Rgb { r : Float, g : Float, b : Float }
