@@ -83,28 +83,30 @@ view : Model -> Browser.Document Msg
 view model =
   { title = "colours"
   , body =
-    [ section
+    [ Html.node "style" [] [text ("body { margin: 0; height: 100vh; }")]
+    , section
       [ style "background-color" (Maybe.withDefault "#FFF" model.background)
-      , style "width" "600px"
-      , style "height" "600px"
-      , style "max-width" "100%"
-      , style "max-height" "100%"
       , style "display" "flex"
       , style "align-items" "center"
       , style "justify-content" "center"
       , style "flex-direction" "column"
-      , style "margin" "auto"
+      , style "height" "100%"
       ]
-      [ span [] [text "hue"]
-      , input [type_ "range", Html.Attributes.min "0", Html.Attributes.max "360", onInput HueChanged, value (String.fromFloat model.hue)] []
-      , span [] [text "saturation"]
-      , input [type_ "range", Html.Attributes.min "0", Html.Attributes.max "100", onInput SaturationChanged, value (String.fromFloat model.saturation)] []
-      , span [] [text "lightness"]
-      , input [type_ "range", Html.Attributes.min "0", Html.Attributes.max "100", onInput LightnessChanged, value (String.fromFloat model.lightness)] []
+      [ section
+        [ style "display" "flex"
+        , style "align-items" "center"
+        , style "justify-content" "center"
+        , style "flex-direction" "column"
+        , style "padding" "100px"
+        ]
+        [ span [] [text "hue"]
+        , input [type_ "range", Html.Attributes.min "0", Html.Attributes.max "360", onInput HueChanged, value (String.fromFloat model.hue)] []
+        , span [] [text "saturation"]
+        , input [type_ "range", Html.Attributes.min "0", Html.Attributes.max "100", onInput SaturationChanged, value (String.fromFloat model.saturation)] []
+        , span [] [text "lightness"]
+        , input [type_ "range", Html.Attributes.min "0", Html.Attributes.max "100", onInput LightnessChanged, value (String.fromFloat model.lightness)] []
+        ]
+      , span [] [text (Maybe.withDefault "#FFF" model.background)]
       ]
     ]
   }
-
-viewLink : String -> Html msg
-viewLink path =
-  li [] [a [href path] [text path]]
