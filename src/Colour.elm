@@ -18,13 +18,7 @@ removeHashPrefix str =
 shortHexToFullHex : String -> String
 shortHexToFullHex value =
   case String.length value of
-    3 ->
-      (String.slice 0 1 value) ++
-      (String.slice 0 1 value) ++
-      (String.slice 1 2 value) ++
-      (String.slice 1 2 value) ++
-      (String.slice 2 3 value) ++
-      (String.slice 2 3 value)
+    3 -> List.foldl (\v s -> s ++ v ++ v) "" (String.split "" value)
     _ -> value
 
 parseHexString : String -> Int
@@ -33,9 +27,9 @@ parseHexString hexVal =
     Ok int -> int
     _ -> 0
 
--- TODO: fix parseHex behaviour - just putting bad stuff here rn
-parseHex : String -> List Int
-parseHex hex =
+-- TODO: fix parseHexAsRgb behaviour - just putting bad stuff here rn
+parseHexAsRgb : String -> List Int
+parseHexAsRgb hex =
   case List.head (Regex.find hexRegex hex) of
     Just match ->
       case .submatches match of
@@ -45,20 +39,8 @@ parseHex hex =
 
 hexToRgb : String -> String
 hexToRgb hex =
-  -- hex
-  -- |> removeHashPrefix
-  -- |> shortHexToFullHex
   String.concat
   [ "rgb("
-  , String.join ", " (List.map String.fromInt (parseHex (shortHexToFullHex (removeHashPrefix hex))))
+  , String.join ", " (List.map String.fromInt (hex |> removeHashPrefix |> shortHexToFullHex |> parseHexAsRgb))
   , ")"
   ]
-  -- case hex of
-  --   "FFFFFF" -> "rgb(255, 255, 255)"
-  --   "ffffff" -> "rgb(255, 255, 255)"
-  --   "eeeeee" -> "rgb(238, 238, 238)"
-  --   "EEE" -> "rgb(238, 238, 238)"
-  --   "FFF" -> "rgb(255, 255, 255)"
-  --   "fff" -> "rgb(255, 255, 255)"
-  --   "eee" -> "rgb(238, 238, 238)"
-  --   _ -> "rgb(0, 0, 0)"
