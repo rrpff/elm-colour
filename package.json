@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "dev": "elm-live",
+    "build": "elm make src/Main.elm --output public/index.js --optimize"
+  },
+  "devDependencies": {
+    "elm": "^0.19.1-5",
+    "elm-live": "^4.0.2"
+  }
+}
